@@ -18,11 +18,12 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
         $pdo->callback(function(string $query, array $parameters) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatementFetchAll(['col1' => null, 'col2' => null]);
+                    return createMockPDOStatementFetchAll(['col1' => 'abcd', 'col2' => 'defg']);
             }
         });
         $queries = parseQueries('SELECT col1, col2 FROM table');
-        $this->assertArrayHasKey('col1', $queries[0]($pdo));
+        $this->assertEquals('abcd', $queries[0]($pdo)['col1']);
+        $this->assertEquals('defg', $queries[0]($pdo)['col2']);
     }
 
     public function testParseQueries_When_StringPassed_Expect_NewFunctionListWithAFunctionPerQuery() {
@@ -30,14 +31,17 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
         $pdo->callback(function(string $query, array $parameters) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatementFetchAll(['col1' => null, 'col2' => null]);
+                    return createMockPDOStatementFetchAll(['col1' => 'abcd', 'col2' => 'defg']);
                 case 'SELECT col3, col2 FROM table':
-                    return createMockPDOStatementFetchAll(['col3' => null, 'col2' => null]);
+                    return createMockPDOStatementFetchAll(['col3' => 'hijk', 'col2' => 'lmno']);
             }
         });
         $queries = parseQueries('SELECT col1, col2 FROM table;\nSELECT col3, col2 FROM table;');
-        $this->assertArrayHasKey('col1', $queries[0]($pdo));
-        $this->assertArrayHasKey('col3', $queries[1]($pdo));
+        $this->assertEquals('abcd', $queries[0]($pdo)['col1']);
+        $this->assertEquals('defg', $queries[0]($pdo)['col2']);
+
+        $this->assertEquals('hijk', $queries[1]($pdo)['col3']);
+        $this->assertEquals('lmno', $queries[1]($pdo)['col2']);
     }
 
 }

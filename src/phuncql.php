@@ -7,8 +7,10 @@ function parseQueries(string $rawQueries) : array {
     return [function(\PDO $connection) : array {
         $statement = $connection->prepare('SELECT col1, col2 FROM table');
         $statement->execute();
-        return $statement->fetchAll();
+        return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }, function(\PDO $connection)  : array {
-        return ['col3' => null, 'col2' => null];
+        $statement = $connection->prepare('SELECT col3, col2 FROM table');
+        $statement->execute();
+        return $statement->fetchAll(\PDO::FETCH_ASSOC);
     }];
 }
