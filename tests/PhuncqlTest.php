@@ -15,8 +15,8 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
             public function __construct()
             {}
         };
-        $queries = parseQueries('SELECT col1, col2 FROM table');
-        $this->assertArrayHasKey('col1', $queries[0]($pdo));
+        $queries = parseQueries($pdo, 'SELECT col1, col2 FROM table');
+        $this->assertArrayHasKey('col1', $queries[0]());
     }
 
     public function testParseQueries_When_StringPassed_Expect_NewFunctionListWithAFunctionPerQuery() {
@@ -24,9 +24,9 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
             public function __construct()
             {}
         };
-        $queries = parseQueries('SELECT col1, col2 FROM table\nSELECT col3, col2 FROM table');
-        $this->assertArrayHasKey('col1', $queries[0]($pdo));
-        $this->assertArrayHasKey('col3', $queries[1]($pdo));
+        $queries = parseQueries($pdo, 'SELECT col1, col2 FROM table\nSELECT col3, col2 FROM table');
+        $this->assertArrayHasKey('col1', $queries[0]());
+        $this->assertArrayHasKey('col3', $queries[1]());
     }
 
 }
