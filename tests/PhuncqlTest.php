@@ -23,7 +23,7 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
             }
         });
 
-        $queries = parseQueries('SELECT col1, col2 FROM table');
+        $queries = phuncql::parseQueries('SELECT col1, col2 FROM table');
 
         $this->assertCount(1, filter(function(callable $query) use ($pdo) {
             $result = $query($pdo);
@@ -45,7 +45,7 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
             }
         });
 
-        $queries = parseQueries('SELECT col1, col2 FROM table;SELECT ' . $col3Identifier . ', col2 FROM table;');
+        $queries = phuncql::parseQueries('SELECT col1, col2 FROM table;SELECT ' . $col3Identifier . ', col2 FROM table;');
 
         $this->assertCount(2, filter(function(callable $query)  use ($pdo, $col3Identifier, $col3Value) {
             $result = $query($pdo);

@@ -5,29 +5,15 @@ namespace pulledbits\phuncql;
 
 use function iter\rewindable\map;
 
-function loadModule(string $moduleNamespace, string $modulePath) : void {
-    spl_autoload_register(function(string $class) use ($moduleNamespace, $modulePath) : void {
-        if (strpos($class, $moduleNamespace) === 0) {
-            include_once $modulePath . str_replace('\\', DIRECTORY_SEPARATOR, str_replace($moduleNamespace, '', $class)) . '.php';
-        }
-    });
-    include_once $modulePath . '.php';
-}
-
-function preloadModule(string $moduleIdentifier) {
-    spl_autoload_register(function(string $class) use ($moduleIdentifier) {
-        if (str_replace(__NAMESPACE__ . '\\', '', $class) === $moduleIdentifier) {
-            loadModule(__NAMESPACE__ . '\\' . $moduleIdentifier, __DIR__ . DIRECTORY_SEPARATOR . $moduleIdentifier);
-        }
-    });
-}
-
 preloadModule('pdo');
 
-function parseQueries(string $rawQueries) : iterable
+class phuncql
 {
-    $parseQuery = function (string $rawQuery) {
-        return pdo::prepare($rawQuery);
-    };
-    return map($parseQuery, explode(';', $rawQueries));
+    function parseQueries(string $rawQueries): iterable
+    {
+        $parseQuery = function (string $rawQuery) {
+            return pdo::prepare($rawQuery);
+        };
+        return map($parseQuery, explode(';', $rawQueries));
+    }
 }
