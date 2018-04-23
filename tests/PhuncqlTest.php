@@ -27,20 +27,23 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
     }
 
     public function testParseQueries_When_StringPassed_Expect_NewFunctionListWithAFunctionPerQuery() {
+        $col3Identifier = uniqid();
+        $col3Value = uniqid();
+
         $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) {
+        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
                     return createMockPDOStatementFetchAll(['col1' => 'abcd', 'col2' => 'defg']);
-                case 'SELECT col3, col2 FROM table':
-                    return createMockPDOStatementFetchAll(['col3' => 'hijk', 'col2' => 'lmno']);
+                case 'SELECT ' . $col3Identifier . ', col2 FROM table':
+                    return createMockPDOStatementFetchAll([$col3Identifier => $col3Value, 'col2' => 'lmno']);
             }
         });
-        $queries = parseQueries('SELECT col1, col2 FROM table;\nSELECT col3, col2 FROM table;');
+        $queries = parseQueries('SELECT col1, col2 FROM table;SELECT ' . $col3Identifier . ', col2 FROM table;');
         $this->assertEquals('abcd', $queries[0]($pdo)['col1']);
         $this->assertEquals('defg', $queries[0]($pdo)['col2']);
 
-        $this->assertEquals('hijk', $queries[1]($pdo)['col3']);
+        $this->assertEquals($col3Value, $queries[1]($pdo)[$col3Identifier]);
         $this->assertEquals('lmno', $queries[1]($pdo)['col2']);
     }
 
