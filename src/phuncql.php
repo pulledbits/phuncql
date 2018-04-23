@@ -9,7 +9,7 @@ import('pdo');
 
 class phuncql
 {
-    function parseQueries(string $rawQueries): iterable
+    static function parseQueries(string $rawQueries): iterable
     {
         $parseQuery = function (string $rawQuery) {
             return pdo::prepare($rawQuery);
