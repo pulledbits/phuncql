@@ -4,5 +4,7 @@ declare(strict_types=1);
 namespace pulledbits\phuncql;
 
 function parseQueries($stream) : array {
-    return [function(){}];
+    return [function(\PDO $connection){
+        return ['col1' => null, 'col2' => null];
+    }];
 }
