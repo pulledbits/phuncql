@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace pulledbits\phuncql;
 
-function parseQueries($stream) : array {
+function parseQueries(string $rawQueries) : array {
     return [function(\PDO $connection){
         return ['col1' => null, 'col2' => null];
     }];

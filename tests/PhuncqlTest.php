@@ -10,14 +10,12 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(true);
     }
 
-    public function testParseQueries_When_StreamPassed_Expect_NewFunctionList() {
-        $stream = fopen("php://memory", 'rw+');
-        fwrite($stream, 'SELECT col1, col2 FROM table');
-        fseek($stream, 0);
-        $queries = parseQueries($stream);
+    public function testParseQueries_When_StingPassed_Expect_NewFunctionList() {
+        $queries = parseQueries('SELECT col1, col2 FROM table');
         $this->assertArrayHasKey('col1', $queries[0](new class extends \PDO {
             public function __construct()
             {}
         }));
     }
+
 }
