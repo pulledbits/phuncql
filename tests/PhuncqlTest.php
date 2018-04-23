@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace pulledbits\phuncql;
 
+use function iter\rewindable\filter;
 use function pulledbits\pdomock\createMockPDOCallback;
 use function pulledbits\pdomock\createMockPDOStatementFetchAll;
 
@@ -21,9 +22,13 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
                     return createMockPDOStatementFetchAll(['col1' => 'abcd', 'col2' => 'defg']);
             }
         });
+
         $queries = parseQueries('SELECT col1, col2 FROM table');
-        $this->assertEquals('abcd', $queries[0]($pdo)['col1']);
-        $this->assertEquals('defg', $queries[0]($pdo)['col2']);
+
+        $this->assertCount(1, filter(function(callable $query) use ($pdo) {
+            $result = $query($pdo);
+            return $result['col1'] === 'abcd' && $result['col2'] === 'defg';
+        }, $queries));
     }
 
     public function testParseQueries_When_StringPassed_Expect_NewFunctionListWithAFunctionPerQuery() {
@@ -39,12 +44,15 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
                     return createMockPDOStatementFetchAll([$col3Identifier => $col3Value, 'col2' => 'lmno']);
             }
         });
-        $queries = parseQueries('SELECT col1, col2 FROM table;SELECT ' . $col3Identifier . ', col2 FROM table;');
-        $this->assertEquals('abcd', $queries[0]($pdo)['col1']);
-        $this->assertEquals('defg', $queries[0]($pdo)['col2']);
 
-        $this->assertEquals($col3Value, $queries[1]($pdo)[$col3Identifier]);
-        $this->assertEquals('lmno', $queries[1]($pdo)['col2']);
+        $queries = parseQueries('SELECT col1, col2 FROM table;SELECT ' . $col3Identifier . ', col2 FROM table;');
+
+        $this->assertCount(2, filter(function(callable $query)  use ($pdo, $col3Identifier, $col3Value) {
+            $result = $query($pdo);
+            return
+                (array_key_exists('col1', $result) && $result['col1'] === 'abcd' && $result['col2'] === 'defg') ||
+                (array_key_exists($col3Identifier, $result) && $result[$col3Identifier] === $col3Value && $result['col2'] === 'lmno');
+        }, $queries));
     }
 
 }
