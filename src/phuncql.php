@@ -9,11 +9,16 @@ spl_autoload_register(function(string $class) {
     if (strpos($class, __NAMESPACE__) === false) {
         return;
     }
-    $subclass = substr($class, strlen(__NAMESPACE__));
-    $module = substr($subclass, strlen('\\'), strpos($subclass, '\\', 1) - 1);
-    switch ($module) {
+    $module = substr($class, strlen(__NAMESPACE__));
+    $nsSeparatorPosition = strpos($module, '\\', 1);
+    if ($nsSeparatorPosition === false) {
+        require_once __DIR__ . DIRECTORY_SEPARATOR . substr($module, strlen('\\')) . '.php';
+        return;
+    }
+
+    switch (substr($module, strlen('\\'), $nsSeparatorPosition - 1)) {
         case 'pdo':
-            require __DIR__ . DIRECTORY_SEPARATOR . 'pdo' . DIRECTORY_SEPARATOR . 'prepare.php';
+            require_once __DIR__ . DIRECTORY_SEPARATOR . 'pdo' . DIRECTORY_SEPARATOR . 'prepare.php';
             break;
     }
     return;
@@ -23,7 +28,7 @@ spl_autoload_register(function(string $class) {
 function parseQueries(string $rawQueries) : iterable
 {
     $parseQuery = function (string $rawQuery) {
-        return new pdo\prepare($rawQuery);
+        return pdo::prepare($rawQuery);
     };
     return map($parseQuery, explode(';', $rawQueries));
 }
