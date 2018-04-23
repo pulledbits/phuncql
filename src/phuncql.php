@@ -7,19 +7,13 @@ use function iter\rewindable\map;
 
 function activateModule(string $moduleIdentifier) : void {
     spl_autoload_register(moduleAutoloader(__NAMESPACE__ . '\\' . $moduleIdentifier, __DIR__ . DIRECTORY_SEPARATOR . $moduleIdentifier));
-    require_once __DIR__ . DIRECTORY_SEPARATOR . $moduleIdentifier . '.php';
-}
-
-function activateModuleClass(string $subclassPath) : void {
-    if (is_file($subclassPath)) {
-        require_once $subclassPath;
-    }
+    include_once __DIR__ . DIRECTORY_SEPARATOR . $moduleIdentifier . '.php';
 }
 
 function moduleAutoloader(string $moduleNamespace, string $modulePath) {
     return function(string $class) use ($moduleNamespace, $modulePath) : void {
         if (strpos($class, $moduleNamespace) !== false) {
-            activateModuleClass($modulePath . str_replace('\\', DIRECTORY_SEPARATOR, str_replace($moduleNamespace, '', $class)) . '.php');
+            include_once $modulePath . str_replace('\\', DIRECTORY_SEPARATOR, str_replace($moduleNamespace, '', $class)) . '.php';
         }
     };
 }
