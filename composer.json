@@ -1,13 +1,14 @@
 {
   "name": "pulledbits/phuncql",
-  "description": "Functional PHP library for SQL databases",
+  "description": "Helper functions to create simple PDO mocks",
   "license": "MIT",
   "type": "library",
   "require": {
     "php": ">=7.2"
   },
   "require-dev": {
-    "phpunit/phpunit": "~7"
+    "phpunit/phpunit": "~7",
+    "pulledbits/pdo-mock": "^1.0"
   },
   "autoload": {
     "files": [
