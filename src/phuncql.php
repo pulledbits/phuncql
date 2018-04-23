@@ -5,7 +5,7 @@ namespace pulledbits\phuncql;
 
 use function iter\rewindable\map;
 
-preloadModule('pdo');
+import('pdo');
 
 class phuncql
 {

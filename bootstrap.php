@@ -12,7 +12,7 @@ function loadModule(string $moduleNamespace, string $modulePath) : void {
     include_once $modulePath . '.php';
 }
 
-function preloadModule(string $moduleIdentifier) {
+function import(string $moduleIdentifier) {
     spl_autoload_register(function(string $class) use ($moduleIdentifier) {
         if (str_replace(__NAMESPACE__ . '\\', '', $class) === $moduleIdentifier) {
             loadModule(__NAMESPACE__ . '\\' . $moduleIdentifier, __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $moduleIdentifier);
@@ -20,4 +20,4 @@ function preloadModule(string $moduleIdentifier) {
     });
 }
 
-preloadModule('phuncql');
+import('phuncql');
