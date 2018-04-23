@@ -24,7 +24,7 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
             public function __construct()
             {}
         };
-        $queries = parseQueries($pdo, 'SELECT col1, col2 FROM table\nSELECT col3, col2 FROM table');
+        $queries = parseQueries($pdo, 'SELECT col1, col2 FROM table;\nSELECT col3, col2 FROM table;');
         $this->assertArrayHasKey('col1', $queries[0]());
         $this->assertArrayHasKey('col3', $queries[1]());
     }
