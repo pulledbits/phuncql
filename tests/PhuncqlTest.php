@@ -10,9 +10,21 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(true);
     }
 
-    public function testParseQueries_When_StingPassed_Expect_NewFunctionList() {
+    public function testParseQueries_When_StringPassed_Expect_NewFunctionList() {
         $queries = parseQueries('SELECT col1, col2 FROM table');
         $this->assertArrayHasKey('col1', $queries[0](new class extends \PDO {
+            public function __construct()
+            {}
+        }));
+    }
+
+    public function testParseQueries_When_StringPassed_Expect_NewFunctionListWithAFunctionPerQuery() {
+        $queries = parseQueries('SELECT col1, col2 FROM table\nSELECT col3, col2 FROM table');
+        $this->assertArrayHasKey('col1', $queries[0](new class extends \PDO {
+            public function __construct()
+            {}
+        }));
+        $this->assertArrayHasKey('col3', $queries[1](new class extends \PDO {
             public function __construct()
             {}
         }));
