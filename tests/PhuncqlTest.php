@@ -13,6 +13,7 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
 
     public function testParseQueries_When_Callback_Expect_MappedCallbackReturnValueToRewindable() {
         $parseQuery = function (string $rawQuery) {
+            $this->assertEquals('SELECT col1, col2 FROM table', $rawQuery);
             return 1;
         };
         $queries = phuncql::parseQueries($parseQuery, 'SELECT col1, col2 FROM table');
