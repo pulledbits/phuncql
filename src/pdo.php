@@ -4,7 +4,7 @@ namespace pulledbits\phuncql;
 
 class pdo
 {
-    static function prepare(string $rawQuery) : pdo\prepare {
-        return new pdo\prepare($rawQuery);
+    static function connect(\PDO $connection) : pdo\connect {
+        return new pdo\connect($connection);
     }
 }

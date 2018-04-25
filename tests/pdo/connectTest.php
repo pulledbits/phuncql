@@ -8,7 +8,7 @@ use function pulledbits\pdomock\createMockPDOStatementFail;
 use function pulledbits\pdomock\createMockPDOStatementFetchAll;
 use pulledbits\phuncql\pdo;
 
-class prepareTest extends TestCase
+class connectTest extends TestCase
 {
 
     public function test__invoke()
@@ -24,8 +24,8 @@ class prepareTest extends TestCase
             }
         });
 
-        $statement = pdo::prepare('SELECT col1, col2 FROM table');
-        $result = $statement($pdo);
+        $connection = pdo::connect($pdo);
+        $result = $connection('SELECT col1, col2 FROM table');
 
         $this->assertEquals($col3Value, $result[$col3Identifier]);
         $this->assertEquals('lmno', $result['col2']);
@@ -45,8 +45,8 @@ class prepareTest extends TestCase
             }
         });
 
-        $statement = pdo::prepare('SELECT col1, col2 FROM table');
-        $result = $statement($pdo);
+        $connection = pdo::connect($pdo);
+        $result = $connection('SELECT col1, col2 FROM table');
 
         $this->assertEquals([], $result);
     }
