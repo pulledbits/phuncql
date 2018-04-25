@@ -11,14 +11,10 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(true);
     }
 
-    public function testParseQueries_When_Callback_Expect_MappedCallbackReturnValueToRewindable() {
-        $parseQuery = function (string $rawQuery) {
-            $this->assertEquals('SELECT col1, col2 FROM table', $rawQuery);
-            return 1;
-        };
-        $queries = phuncql::parseQueries($parseQuery, 'SELECT col1, col2 FROM table');
+    public function testParseQueries_When_OneQuery_Expect_FirstElementToContainQuery() {
+        $queries = phuncql::parseQueries('SELECT col1, col2 FROM table');
 
-        $this->assertEquals(1, $queries->current());
+        $this->assertEquals('SELECT col1, col2 FROM table', $queries[0]);
     }
 
 
