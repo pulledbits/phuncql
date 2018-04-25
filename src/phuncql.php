@@ -9,11 +9,8 @@ import('pdo');
 
 class phuncql
 {
-    static function parseQueries(string $rawQueries): iterable
+    static function parseQueries(callable $callback, string $rawQueries): iterable
     {
-        $parseQuery = function (string $rawQuery) {
-            return pdo::prepare($rawQuery);
-        };
-        return map($parseQuery, explode(';', $rawQueries));
+        return map($callback, explode(';', $rawQueries));
     }
 }
