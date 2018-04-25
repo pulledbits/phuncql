@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace pulledbits\phuncql;
 
-use function iter\rewindable\filter;
-use function pulledbits\pdomock\createMockPDOCallback;
-use function pulledbits\pdomock\createMockPDOStatementFetchAll;
 
 class PhuncqlTest extends \PHPUnit\Framework\TestCase
 {
@@ -14,51 +11,14 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(true);
     }
 
-    public function testParseQueries_When_StringPassed_Expect_NewFunctionList() {
-        $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) {
-            switch ($query) {
-                case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatementFetchAll(['col1' => 'abcd', 'col2' => 'defg']);
-            }
-        });
-
+    public function testParseQueries_When_Callback_Expect_MappedCallbackReturnValueToRewindable() {
         $parseQuery = function (string $rawQuery) {
-            return pdo::prepare($rawQuery);
+            return 1;
         };
         $queries = phuncql::parseQueries($parseQuery, 'SELECT col1, col2 FROM table');
 
-        $this->assertCount(1, filter(function(callable $query) use ($pdo) {
-            $result = $query($pdo);
-            return $result['col1'] === 'abcd' && $result['col2'] === 'defg';
-        }, $queries));
+        $this->assertEquals(1, $queries->current());
     }
 
-    public function testParseQueries_When_StringPassed_Expect_NewFunctionListWithAFunctionPerQuery() {
-        $col3Identifier = uniqid();
-        $col3Value = uniqid();
-
-        $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
-            switch ($query) {
-                case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatementFetchAll(['col1' => 'abcd', 'col2' => 'defg']);
-                case 'SELECT ' . $col3Identifier . ', col2 FROM table':
-                    return createMockPDOStatementFetchAll([$col3Identifier => $col3Value, 'col2' => 'lmno']);
-            }
-        });
-
-        $parseQuery = function (string $rawQuery) {
-            return pdo::prepare($rawQuery);
-        };
-        $queries = phuncql::parseQueries($parseQuery, 'SELECT col1, col2 FROM table;SELECT ' . $col3Identifier . ', col2 FROM table;');
-
-        $this->assertCount(2, filter(function(callable $query)  use ($pdo, $col3Identifier, $col3Value) {
-            $result = $query($pdo);
-            return
-                (array_key_exists('col1', $result) && $result['col1'] === 'abcd' && $result['col2'] === 'defg') ||
-                (array_key_exists($col3Identifier, $result) && $result[$col3Identifier] === $col3Value && $result['col2'] === 'lmno');
-        }, $queries));
-    }
 
 }
