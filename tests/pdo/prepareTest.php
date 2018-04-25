@@ -24,7 +24,8 @@ class prepareTest extends TestCase
             }
         });
 
-        $result = pdo::prepare('SELECT col1, col2 FROM table')($pdo);
+        $statement = pdo::prepare('SELECT col1, col2 FROM table');
+        $result = $statement($pdo);
 
         $this->assertEquals($col3Value, $result[$col3Identifier]);
         $this->assertEquals('lmno', $result['col2']);
@@ -44,7 +45,8 @@ class prepareTest extends TestCase
             }
         });
 
-        $result = pdo::prepare('SELECT col1, col2 FROM table')($pdo);
+        $statement = pdo::prepare('SELECT col1, col2 FROM table');
+        $result = $statement($pdo);
 
         $this->assertEquals([], $result);
     }
