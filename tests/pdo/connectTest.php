@@ -20,15 +20,16 @@ class connectTest extends TestCase
         $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatementFetchAll([$col3Identifier => $col3Value, 'col2' => 'lmno']);
+                    return createMockPDOStatementFetchAll([[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
             }
         });
 
         $connection = pdo::connect($pdo);
-        $result = $connection('SELECT col1, col2 FROM table');
+        $statement = $connection('SELECT col1, col2 FROM table');
+        $results = $statement();
 
-        $this->assertEquals($col3Value, $result[$col3Identifier]);
-        $this->assertEquals('lmno', $result['col2']);
+        $this->assertEquals($col3Value, $results[0][$col3Identifier]);
+        $this->assertEquals('lmno', $results[0]['col2']);
     }
 
 
@@ -46,8 +47,9 @@ class connectTest extends TestCase
         });
 
         $connection = pdo::connect($pdo);
-        $result = $connection('SELECT col1, col2 FROM table');
+        $statement = $connection('SELECT col1, col2 FROM table');
+        $results = $statement();
 
-        $this->assertEquals([], $result);
+        $this->assertEquals([], $results);
     }
 }
