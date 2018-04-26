@@ -12,9 +12,9 @@
     "pulledbits/pdo-mock": "^1.0"
   },
   "autoload": {
-    "files": [
-      "bootstrap.php"
-    ]
+    "psr-4": {
+      "pulledbits\\phuncql\\": "src"
+    }
   },
   "config": {
     "discard-changes": true
