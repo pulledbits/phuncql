@@ -4,8 +4,7 @@ namespace pulledbits\phuncql\pdo;
 
 use PHPUnit\Framework\TestCase;
 use function pulledbits\pdomock\createMockPDOCallback;
-use function pulledbits\pdomock\createMockPDOStatementFail;
-use function pulledbits\pdomock\createMockPDOStatementFetchAll;
+use function pulledbits\pdomock\createMockPDOStatement;
 use pulledbits\phuncql\pdo;
 
 class connectTest extends TestCase
@@ -20,7 +19,7 @@ class connectTest extends TestCase
         $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatementFetchAll([[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
+                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
             }
         });
 
@@ -32,6 +31,30 @@ class connectTest extends TestCase
         $this->assertEquals('lmno', $results[0]['col2']);
     }
 
+    public function test__invoke_When_PlaceholdersInQuery_Expect_RequiredParameters()
+    {
+        $col3Identifier = uniqid();
+        $col3Value = uniqid();
+
+        $pdo = createMockPDOCallback();
+        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
+            switch ($query) {
+                case 'SELECT col1, col2 FROM table WHERE col1 = ' . $parameters[0]:
+                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
+            }
+        });
+
+        $connection = pdo::connect($pdo);
+        $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
+
+        $this->expectException('\ArgumentCountError');
+        $this->expectExceptionMessageRegExp('/^1 parameter\(s\) expected, 0 given/');
+
+        $results = $statement();
+
+        $this->assertEquals($col3Value, $results[0][$col3Identifier]);
+        $this->assertEquals('lmno', $results[0]['col2']);
+    }
 
     public function test__invoke_When_InvalidQuery_Expect_FailedExecution()
     {
@@ -42,7 +65,7 @@ class connectTest extends TestCase
         $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatementFail(false);
+                    return createMockPDOStatement($query, false);
             }
         });
 
