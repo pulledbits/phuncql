@@ -11,14 +11,17 @@ class prepare
     public function __construct(\PDOStatement $statement) {
         $this->statement = $statement;
     }
-    public function __invoke() : array {
-        $queryParameterCount = preg_match_all('/(:\w+|\?)/', $this->statement->queryString,$matches);
-        if ($queryParameterCount > func_num_args()) {
-            throw new \ArgumentCountError($queryParameterCount . ' parameter(s) expected, ' . func_num_args() . ' given.');
+    public function __invoke(...$functionArguments) : array {
+        if (count($functionArguments) === 0) {
+            $result = $this->statement->execute();
+        } elseif (is_array($functionArguments[0])) {
+            $result = $this->statement->execute($functionArguments[0]);
+        } else {
+            $result = $this->statement->execute($functionArguments);
         }
-        if ($this->statement->execute() === false) {
-            return [];
+        if ($result) {
+            return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
         }
-        return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
+        return [];
     }
 }
