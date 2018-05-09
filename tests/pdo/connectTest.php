@@ -31,7 +31,7 @@ class connectTest extends TestCase
         $this->assertEquals('lmno', $results[0]['col2']);
     }
 
-    public function test__invoke_When_PlaceholdersInQuery_Expect_RequiredParameters()
+    public function test__invoke_When_NamedPlaceholdersInQuery_Expect_RequiredParameters()
     {
         $col3Identifier = uniqid();
         $col3Value = uniqid();
@@ -51,6 +51,49 @@ class connectTest extends TestCase
         $this->expectExceptionMessageRegExp('/^1 parameter\(s\) expected, 0 given/');
 
         $results = $statement();
+
+        $this->assertEquals($col3Value, $results[0][$col3Identifier]);
+        $this->assertEquals('lmno', $results[0]['col2']);
+    }
+
+    public function test__invoke_When_PlaceholdersInQuery_Expect_RequiredParameters()
+    {
+        $col3Identifier = uniqid();
+        $col3Value = uniqid();
+
+        $pdo = createMockPDOCallback();
+        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
+            switch ($query) {
+                case 'SELECT col1, col2 FROM table WHERE col1 = ' . $parameters[0]:
+                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
+            }
+        });
+
+        $connection = pdo::connect($pdo);
+        $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = ?');
+
+        $this->expectException('\ArgumentCountError');
+        $this->expectExceptionMessageRegExp('/^1 parameter\(s\) expected, 0 given/');
+        $statement();
+    }
+
+    public function test__invoke_When_PlaceholdersInQueryAndParametersGiven_Expect_ResultSet()
+    {
+        $col3Identifier = uniqid();
+        $col3Value = uniqid();
+
+        $pdo = createMockPDOCallback();
+        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
+            switch ($query) {
+                case 'SELECT col1, col2 FROM table WHERE col1 = ' . $parameters[0]:
+                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']], $parameters, ['abcde']);
+            }
+        });
+
+        $connection = pdo::connect($pdo);
+        $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
+
+        $results = $statement('abcde');
 
         $this->assertEquals($col3Value, $results[0][$col3Identifier]);
         $this->assertEquals('lmno', $results[0]['col2']);
