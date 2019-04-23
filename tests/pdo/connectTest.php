@@ -12,8 +12,8 @@ class connectTest extends TestCase
 
     public function test__invoke()
     {
-        $col3Identifier = uniqid();
-        $col3Value = uniqid();
+        $col3Identifier = uniqid("invoke", true);
+        $col3Value = uniqid("invoke", true);
 
         $pdo = createMockPDOCallback();
         $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
