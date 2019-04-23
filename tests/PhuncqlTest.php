@@ -42,7 +42,7 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
         });
         $querier = phuncql::connect('mysql:host=localhost;dbname=testdb');
         $query = $querier('SELECT * FROM test');
-        $this->assertInstanceOf('Traversable', $query());
+        $this->assertInstanceOf('Closure', $query());
     }
 
 }
