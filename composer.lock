@@ -950,20 +950,20 @@
         },
         {
             "name": "pulledbits/pdo-mock",
-            "version": "2.1.2",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pulledbits/pdo-mock.git",
-                "reference": "7e93ee11628360f7be2719542304ef3c229ee3a6"
+                "reference": "eec47d87a05e234079f07abc883d9d70d27436de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pulledbits/pdo-mock/zipball/7e93ee11628360f7be2719542304ef3c229ee3a6",
-                "reference": "7e93ee11628360f7be2719542304ef3c229ee3a6",
+                "url": "https://api.github.com/repos/pulledbits/pdo-mock/zipball/eec47d87a05e234079f07abc883d9d70d27436de",
+                "reference": "eec47d87a05e234079f07abc883d9d70d27436de",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2"
+                "php": ">=7.3"
             },
             "require-dev": {
                 "phpunit/phpunit": "~7"
@@ -979,7 +979,7 @@
                 "MIT"
             ],
             "description": "Helper functions to create simple PDO mocks",
-            "time": "2018-05-09T07:53:36+00:00"
+            "time": "2019-04-23T17:42:21+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
