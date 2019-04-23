@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "library",
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.3",
     "nikic/iter": "^1.6",
     "lstrojny/functional-php": "^1.9"
   },

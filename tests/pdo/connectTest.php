@@ -2,6 +2,7 @@
 
 namespace pulledbits\phuncql\pdo;
 
+use function Functional\first;
 use PHPUnit\Framework\TestCase;
 use function pulledbits\pdomock\createMockPDOCallback;
 use function pulledbits\pdomock\createMockPDOStatement;
@@ -17,7 +18,7 @@ class connectTest extends TestCase
 
 
         $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
+        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) : \PDOStatement {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
                     return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
@@ -25,14 +26,15 @@ class connectTest extends TestCase
         });
 
 
-        $linkIdentifier = sha1('mysql');
+        $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
         $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table');
         $results = $statement();
 
-        $this->assertEquals($col3Value, $results[0][$col3Identifier]);
-        $this->assertEquals('lmno', $results[0]['col2']);
+        $current = first($results);
+        $this->assertEquals($col3Value, $current[$col3Identifier]);
+        $this->assertEquals('lmno', $current['col2']);
     }
 
     public function test__invoke_When_NamedPlaceholdersInQuery_Expect_RequiredParameters()
@@ -48,7 +50,7 @@ class connectTest extends TestCase
             }
         });
 
-        $linkIdentifier = sha1('mysql');
+        $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
         $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
@@ -71,7 +73,7 @@ class connectTest extends TestCase
             }
         });
 
-        $linkIdentifier = sha1('mysql');
+        $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
         $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = ?');
@@ -93,15 +95,16 @@ class connectTest extends TestCase
             }
         });
 
-        $linkIdentifier = sha1('mysql');
+        $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
         $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
 
         $results = $statement([':col1Value' => 'abcde']);
+        $result = first($results);
 
-        $this->assertEquals($col3Value, $results[0][$col3Identifier]);
-        $this->assertEquals('lmno', $results[0]['col2']);
+        $this->assertEquals($col3Value, $result[$col3Identifier]);
+        $this->assertEquals('lmno', $result['col2']);
     }
 
     public function test__invoke_When_InvalidQuery_Expect_FailedExecution()
@@ -114,12 +117,12 @@ class connectTest extends TestCase
             }
         });
 
-        $linkIdentifier = sha1('mysql');
+        $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
         $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table');
         $results = $statement();
 
-        $this->assertEquals([], $results);
+        $this->assertCount(0, $results);
     }
 }

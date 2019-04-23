@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace pulledbits\phuncql;
 
 
+use function pulledbits\pdomock\createMockPDOCallback;
+
 class PhuncqlTest extends \PHPUnit\Framework\TestCase
 {
     public function testSanity_When_True_Expect_True() : void
@@ -26,14 +28,21 @@ class PhuncqlTest extends \PHPUnit\Framework\TestCase
     }
 
     final public function testConnect_When_ValidDSN_Expect_QueryExecutorClosure() : void {
+        pdo::$links['mysql:host=localhost;dbname=testdb'] = createMockPDOCallback();
+        pdo::$links['mysql:host=localhost;dbname=testdb']->callback(function(string $query, array $parameters) {
+        });
         $querier = phuncql::connect('mysql:host=localhost;dbname=testdb');
         $this->assertInstanceOf('Closure', $querier);
     }
 
     final public function testQuerier_When_Valid_Query_Expect_ResultSetIterator() : void {
+
+        pdo::$links['mysql:host=localhost;dbname=testdb'] = createMockPDOCallback();
+        pdo::$links['mysql:host=localhost;dbname=testdb']->callback(function(string $query, array $parameters) {
+        });
         $querier = phuncql::connect('mysql:host=localhost;dbname=testdb');
-        $results = $querier('SELECT * FROM test');
-        $this->assertInstanceOf('Traversable', $results);
+        $query = $querier('SELECT * FROM test');
+        $this->assertInstanceOf('Traversable', $query());
     }
 
 }
