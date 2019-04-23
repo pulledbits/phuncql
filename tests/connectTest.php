@@ -1,11 +1,10 @@
 <?php
 
-namespace pulledbits\phuncql\pdo;
+namespace pulledbits\phuncql;
 
 use PHPUnit\Framework\TestCase;
 use function pulledbits\pdomock\createMockPDOCallback;
 use function pulledbits\pdomock\createMockPDOStatement;
-use pulledbits\phuncql\pdo;
 
 class connectTest extends TestCase
 {
