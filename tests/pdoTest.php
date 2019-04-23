@@ -6,10 +6,10 @@ use PHPUnit\Framework\TestCase;
 use function pulledbits\pdomock\createMockPDOCallback;
 use function pulledbits\pdomock\createMockPDOStatement;
 
-class connectTest extends TestCase
+class pdoTest extends TestCase
 {
 
-    public function test__invoke()
+    public function testConnect()
     {
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
@@ -35,7 +35,7 @@ class connectTest extends TestCase
         });
     }
 
-    public function test__invoke_When_NamedPlaceholdersInQuery_Expect_RequiredParameters()
+    public function testConnect_When_NamedPlaceholdersInQuery_Expect_RequiredParameters()
     {
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
@@ -56,7 +56,7 @@ class connectTest extends TestCase
         $this->assertFalse($statement()(function(){}));
     }
 
-    public function test__invoke_When_PlaceholdersInQuery_Expect_RequiredParameters()
+    public function testConnect_When_PlaceholdersInQuery_Expect_RequiredParameters()
     {
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
@@ -76,7 +76,7 @@ class connectTest extends TestCase
         $this->assertFalse($statement()(function(){}));
     }
 
-    public function test__invoke_When_PlaceholdersInQueryAndParametersGiven_Expect_ResultSet()
+    public function testConnect_When_PlaceholdersInQueryAndParametersGiven_Expect_ResultSet()
     {
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
@@ -102,7 +102,7 @@ class connectTest extends TestCase
         }));
     }
 
-    public function test__invoke_When_InvalidQuery_Expect_FailedExecution()
+    public function testConnect_When_InvalidQuery_Expect_FailedExecution()
     {
         $pdo = createMockPDOCallback();
         $pdo->callback(function(string $query, array $parameters) {
