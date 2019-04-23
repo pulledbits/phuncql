@@ -15,6 +15,7 @@ class connectTest extends TestCase
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
 
+
         $pdo = createMockPDOCallback();
         $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
@@ -23,7 +24,10 @@ class connectTest extends TestCase
             }
         });
 
-        $connection = pdo::connect($pdo);
+
+        $linkIdentifier = sha1('mysql');
+        pdo::$links[$linkIdentifier] = $pdo;
+        $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table');
         $results = $statement();
 
@@ -44,7 +48,9 @@ class connectTest extends TestCase
             }
         });
 
-        $connection = pdo::connect($pdo);
+        $linkIdentifier = sha1('mysql');
+        pdo::$links[$linkIdentifier] = $pdo;
+        $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
 
 
@@ -65,7 +71,9 @@ class connectTest extends TestCase
             }
         });
 
-        $connection = pdo::connect($pdo);
+        $linkIdentifier = sha1('mysql');
+        pdo::$links[$linkIdentifier] = $pdo;
+        $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = ?');
 
         $this->expectExceptionMessageRegExp('/SQLSTATE\[HY093\]/');
@@ -85,7 +93,9 @@ class connectTest extends TestCase
             }
         });
 
-        $connection = pdo::connect($pdo);
+        $linkIdentifier = sha1('mysql');
+        pdo::$links[$linkIdentifier] = $pdo;
+        $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
 
         $results = $statement([':col1Value' => 'abcde']);
@@ -104,7 +114,9 @@ class connectTest extends TestCase
             }
         });
 
-        $connection = pdo::connect($pdo);
+        $linkIdentifier = sha1('mysql');
+        pdo::$links[$linkIdentifier] = $pdo;
+        $connection = pdo::connect($linkIdentifier);
         $statement = $connection('SELECT col1, col2 FROM table');
         $results = $statement();
 

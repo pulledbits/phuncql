@@ -2,14 +2,26 @@
 
 namespace pulledbits\phuncql;
 
+/**
+ * Class pdo
+ * @package pulledbits\phuncql
+ * @impure connection with database through PDO
+ */
 class pdo
 {
-    static function connect(\PDO $connection) : \Closure{
+    static $links = [];
+
+    static function connect(string $dsn) : \Closure{
+        if (array_key_exists($dsn, self::$links) === false) {
+            self::$links[$dsn] = new \PDO($dsn);
+        }
+        $connection = self::$links[$dsn];
         return function(string $rawQuery) use ($connection) : \Closure {
             return self::prepare($connection->prepare($rawQuery));
         };
     }
-    static function prepare(\PDOStatement $statement) : \Closure {
+
+    private static function prepare(\PDOStatement $statement) : \Closure {
         return function (...$functionArguments) use ($statement) : array {
             if (count($functionArguments) === 0) {
                 $result = $statement->execute();
