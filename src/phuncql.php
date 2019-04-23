@@ -10,8 +10,8 @@ class phuncql
         return explode(';', $rawQueries);
     }
 
-    public static function connect(string $dsn) : \Closure
+    public static function connect(string $dsn, callable $error) : \Closure
     {
-        return pdo::connect($dsn);
+        return pdo::connect($dsn, $error);
     }
 }

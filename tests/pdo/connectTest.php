@@ -27,7 +27,7 @@ class connectTest extends TestCase
 
         $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier);
+        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
         $statement = $connection('SELECT col1, col2 FROM table');
         $results = $statement();
         $results(function(array $result) use ($col3Identifier, $col3Value) : void {
@@ -51,7 +51,7 @@ class connectTest extends TestCase
 
         $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier);
+        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
 
         $this->assertFalse($statement()(function(){}));
@@ -72,7 +72,7 @@ class connectTest extends TestCase
 
         $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier);
+        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = ?');
         $this->assertFalse($statement()(function(){}));
     }
@@ -92,7 +92,7 @@ class connectTest extends TestCase
 
         $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier);
+        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
         $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
 
         $results = $statement([':col1Value' => 'abcde']);
@@ -115,7 +115,7 @@ class connectTest extends TestCase
 
         $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier);
+        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
         $statement = $connection('SELECT col1, col2 FROM table');
         $results = $statement();
 
