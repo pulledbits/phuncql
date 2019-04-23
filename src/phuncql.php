@@ -5,7 +5,7 @@ namespace pulledbits\phuncql;
 
 class phuncql
 {
-    static function parseQueries(string $rawQueries) : iterable
+    public static function parseQueries(string $rawQueries) : iterable
     {
         return explode(';', $rawQueries);
     }

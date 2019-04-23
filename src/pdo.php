@@ -24,14 +24,14 @@ class pdo
             }
         }
         $connection = self::$links[$dsn];
-        return function (string $query) use ($connection, $error) : callable {
+        return static function (string $query) use ($connection, $error) : callable {
             return self::prepare($connection->prepare($query), $error);
         };
     }
 
     private static function prepare(\PDOStatement $statement, callable $error): callable
     {
-        return function(...$parameters) use ($statement, $error) : callable {
+        return static function(...$parameters) use ($statement, $error) : callable {
             try {
                 $statement->execute(...$parameters);
             } catch (\PDOException $exception) {
@@ -40,7 +40,7 @@ class pdo
                     return false;
                 };
             }
-            return function(callable $callback) use ($statement) : bool {
+            return static function(callable $callback) use ($statement) : bool {
                 return $statement->fetchAll(\PDO::FETCH_FUNC, $callback) !== false;
             };
         };
