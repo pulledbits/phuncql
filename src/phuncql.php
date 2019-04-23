@@ -9,4 +9,9 @@ class phuncql
     {
         return explode(';', $rawQueries);
     }
+
+    public static function connect(string $string)
+    {
+        return function() {};
+    }
 }
