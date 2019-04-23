@@ -10,7 +10,7 @@ class phuncql
         return explode(';', $rawQueries);
     }
 
-    public static function connect(string $string)
+    public static function connect(string $dsn)
     {
         return function(string $query) : \Traversable {
             return new class implements \Iterator {
