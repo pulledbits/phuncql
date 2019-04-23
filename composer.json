@@ -15,7 +15,10 @@
   "autoload": {
     "psr-4": {
       "pulledbits\\phuncql\\": "src"
-    }
+    },
+    "files": [
+      "src/phuncql.php"
+    ]
   },
   "config": {
     "discard-changes": true
