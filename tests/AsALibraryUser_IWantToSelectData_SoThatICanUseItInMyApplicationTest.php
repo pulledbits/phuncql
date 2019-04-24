@@ -9,14 +9,29 @@ use function pulledbits\pdomock\createMockPDOStatement;
 class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extends TestCase
 {
 
+    private $pdo;
+    private $connection;
+
+    protected function setUp()
+    {
+        $this->pdo = createMockPDOCallback();
+        $linkIdentifier = uniqid('mysql', true);
+        pdo::$links[$linkIdentifier] = $this->pdo;
+        $this->connection = pdo::connect($linkIdentifier, function(\Error $error){});
+
+    }
+
+    protected function tearDown()
+    {
+        pdo::$links = [];
+    }
+
     public function testConnect()
     {
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
 
-
-        $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) : \PDOStatement {
+        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) : \PDOStatement {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
                     return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
@@ -24,10 +39,7 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
         });
 
 
-        $linkIdentifier = uniqid('mysql', true);
-        pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
-        $statement = $connection('SELECT col1, col2 FROM table');
+        $statement = ($this->connection)('SELECT col1, col2 FROM table');
         $results = $statement();
         $results(function(array $result) use ($col3Identifier, $col3Value) : void {
             $this->assertEquals($col3Value, $result[$col3Identifier]);
@@ -40,18 +52,13 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
 
-        $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
+        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table WHERE col1 = ' . $parameters[0]:
                     return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']], $parameters, ['']);
             }
         });
-
-        $linkIdentifier = uniqid('mysql', true);
-        pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
-        $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
+        $statement = ($this->connection)('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
 
         $this->assertFalse($statement()(function(){}));
     }
@@ -61,18 +68,14 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
 
-        $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
+        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table WHERE col1 = ?':
                     return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']], $parameters, ['']);
             }
         });
 
-        $linkIdentifier = uniqid('mysql', true);
-        pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
-        $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = ?');
+        $statement = ($this->connection)('SELECT col1, col2 FROM table WHERE col1 = ?');
         $this->assertFalse($statement()(function(){}));
     }
 
@@ -81,18 +84,14 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
         $col3Identifier = uniqid("invoke", true);
         $col3Value = uniqid("invoke", true);
 
-        $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
+        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table WHERE col1 = ' . $parameters[0]:
                     return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']], $parameters, ['abcde']);
             }
         });
 
-        $linkIdentifier = uniqid('mysql', true);
-        pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
-        $statement = $connection('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
+        $statement = ($this->connection)('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
 
         $results = $statement([':col1Value' => 'abcde']);
 
@@ -104,18 +103,14 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
 
     public function testConnect_When_InvalidQuery_Expect_FailedExecution()
     {
-        $pdo = createMockPDOCallback();
-        $pdo->callback(function(string $query, array $parameters) {
+        $this->pdo->callback(function(string $query, array $parameters) {
             switch ($query) {
                 case 'SELECT col1, col2 FROM table':
                     return createMockPDOStatement($query, false);
             }
         });
 
-        $linkIdentifier = uniqid('mysql', true);
-        pdo::$links[$linkIdentifier] = $pdo;
-        $connection = pdo::connect($linkIdentifier, function(\Error $error){});
-        $statement = $connection('SELECT col1, col2 FROM table');
+        $statement = ($this->connection)('SELECT col1, col2 FROM table');
         $results = $statement();
 
         $this->assertFalse($results(function(){}));
