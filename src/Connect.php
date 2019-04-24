@@ -5,5 +5,5 @@ namespace pulledbits\phuncql;
 
 function connect(string $dsn, callable $error) : \Closure
 {
-    return pdo::connect($dsn, $error);
+    return call('pdo/connect', [])(...func_get_args());
 }
