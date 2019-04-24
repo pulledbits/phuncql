@@ -2,11 +2,6 @@
 
 namespace pulledbits\phuncql;
 
-/**
- * Class pdo
- * @package pulledbits\phuncql
- * @impure connection with database through PDO
- */
 class pdo
 {
     static $links = [];

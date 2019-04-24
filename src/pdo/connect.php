@@ -6,6 +6,10 @@ namespace pulledbits\phuncql\pdo;
 use function pulledbits\phuncql\call;
 
 return static function (array $links) {
+    /**
+     * @impure connection with database through PDO
+     * @return callable
+     */
     return static function (string $dsn, callable $error) use ($links) : callable {
         if (array_key_exists($dsn, $links) === false) {
             try {
