@@ -15,9 +15,4 @@ class pdo
     {
         return call('pdo/connect', self::$links)(...func_get_args());
     }
-
-    public static function prepare(\PDOStatement $statement, callable $error): callable
-    {
-        return call('pdo/prepare', $statement, $error);
-    }
 }

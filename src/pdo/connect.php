@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace pulledbits\phuncql\pdo;
 
-use pulledbits\phuncql\pdo;
-return static function(array $links) {
+use function pulledbits\phuncql\call;
+
+return static function (array $links) {
     return static function (string $dsn, callable $error) use ($links) : callable {
         if (array_key_exists($dsn, $links) === false) {
             try {
@@ -18,7 +19,7 @@ return static function(array $links) {
         }
         $connection = $links[$dsn];
         return static function (string $query) use ($connection, $error) : callable {
-            return pdo::prepare($connection->prepare($query), $error);
+            return call('pdo/prepare', $connection->prepare($query), $error);
         };
     };
 };
