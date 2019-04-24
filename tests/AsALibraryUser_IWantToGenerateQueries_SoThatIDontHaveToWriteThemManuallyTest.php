@@ -7,10 +7,6 @@ use PHPUnit\Framework\TestCase;
 
 class AsALibraryUser_IWantToGenerateQueriesInTheConnectionDialect_SoThatIDontHaveToWriteThemManuallyTest extends TestCase
 {
-
-
-
-
     final public function test_WhenSelectQueryGenerated_ExpectAnSelectQuery() : void {
         $querier = connect('sqlite::memory:', function(\Error $error){});
         $query = $querier(function(string $dialect) : string {
