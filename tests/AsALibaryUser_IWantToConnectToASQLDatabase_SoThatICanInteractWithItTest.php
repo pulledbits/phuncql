@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace pulledbits\phuncql;
 
-
-use function pulledbits\pdomock\createMockPDOCallback;
-
 class AsALibaryUser_IWantToConnectToASQLDatabase_SoThatICanInteractWithItTest extends \PHPUnit\Framework\TestCase
 {
     private static $sqlite_file;
@@ -47,7 +44,7 @@ class AsALibaryUser_IWantToConnectToASQLDatabase_SoThatICanInteractWithItTest ex
 
     final public function test() : void {
         $querier = connect('sqlite:' . self::$sqlite_file, function(\Error $error){});
-        $query = $querier('SELECT * FROM persons');
+        $query = $querier(function(string $dialect) : string { return 'SELECT * FROM persons'; });
         $this->assertInstanceOf('Closure', $query());
     }
 

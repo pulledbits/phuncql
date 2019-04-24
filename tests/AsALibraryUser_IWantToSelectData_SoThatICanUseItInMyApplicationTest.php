@@ -35,7 +35,7 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
 
     public function testConnect()
     {
-        $statement = ($this->connection)('SELECT col1, col2 FROM persons');
+        $statement = ($this->connection)(function(string $dialect) : string { return 'SELECT col1, col2 FROM persons';});
         $results = $statement();
         $results(function (string $col1, string $col2): void {
             $this->assertEquals($this->col3Value, $col1);
@@ -50,25 +50,25 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
             throw $error;
         });
         $this->expectExceptionMessageRegExp('/syntax error/');
-        $connection('SELECT col1 col2 persons');
+        $connection(function(string $dialect) : string { return 'SELECT col1 col2 persons'; });
     }
 
     public function testConnect_When_NamedPlaceholdersInQuery_Expect_RequiredParameters()
     {
-        $statement = ($this->connection)('SELECT col1, col2 FROM persons WHERE col1 = :col1Value');
+        $statement = ($this->connection)(function(string $dialect) : string { return 'SELECT col1, col2 FROM persons WHERE col1 = :col1Value'; });
 
         $this->assertFalse($statement()(function(string $col1, string $col2) { throw new \Exception('oops'); }));
     }
 
     public function testConnect_When_PlaceholdersInQuery_Expect_RequiredParameters()
     {
-        $statement = ($this->connection)('SELECT col1, col2 FROM persons WHERE col1 = ?');
+        $statement = ($this->connection)(function(string $dialect) : string { return 'SELECT col1, col2 FROM persons WHERE col1 = ?'; });
         $this->assertFalse($statement()(function(string $col1, string $col2) { throw new \Exception('oops'); }));
     }
 
     public function testConnect_When_PlaceholdersInQueryAndParametersGiven_Expect_ResultSet()
     {
-        $statement = ($this->connection)('SELECT col1, col2 FROM persons WHERE col1 = :col1Value');
+        $statement = ($this->connection)(function(string $dialect) : string { return 'SELECT col1, col2 FROM persons WHERE col1 = :col1Value'; });
 
         $results = $statement([':col1Value' => 'abcde']);
 
