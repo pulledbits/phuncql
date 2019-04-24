@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a46bb511a486c3daba4ea3abe2bf160",
+    "content-hash": "61a66b2aff1232bb1038e5825b2e84e8",
     "packages": [
         {
             "name": "lstrojny/functional-php",
@@ -945,39 +945,6 @@
                 "xunit"
             ],
             "time": "2019-04-19T15:52:00+00:00"
-        },
-        {
-            "name": "pulledbits/pdo-mock",
-            "version": "2.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pulledbits/pdo-mock.git",
-                "reference": "c3e3af2e67efbed4f4488bcf909883e1e693f0a9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pulledbits/pdo-mock/zipball/c3e3af2e67efbed4f4488bcf909883e1e693f0a9",
-                "reference": "c3e3af2e67efbed4f4488bcf909883e1e693f0a9",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.3"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~7"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/pdo-mock.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Helper functions to create simple PDO mocks",
-            "time": "2019-04-23T18:22:16+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

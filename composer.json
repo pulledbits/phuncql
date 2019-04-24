@@ -11,8 +11,7 @@
   },
   "require-dev": {
     "ext-sqlite3" : "*",
-    "phpunit/phpunit": "~8.1",
-    "pulledbits/pdo-mock": "^2.0"
+    "phpunit/phpunit": "~8.1"
   },
   "autoload": {
     "psr-4": {
