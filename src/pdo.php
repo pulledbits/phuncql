@@ -11,25 +11,12 @@ class pdo
 {
     static $links = [];
 
-    static function connect(string $dsn, callable $error): callable
+    public static function connect(string $dsn, callable $error): callable
     {
-        if (array_key_exists($dsn, self::$links) === false) {
-            try {
-                self::$links[$dsn] = new \PDO($dsn);
-            } catch (\PDOException $e) {
-                $error(new \Error("Unable to connect: " . $e->getMessage()));
-                return function(string $query) use ($error) : callable {
-                    trigger_error('No connection', E_USER_ERROR);
-                };
-            }
-        }
-        $connection = self::$links[$dsn];
-        return static function (string $query) use ($connection, $error) : callable {
-            return self::prepare($connection->prepare($query), $error);
-        };
+        return import(__DIR__ . DIRECTORY_SEPARATOR . 'pdo' . DIRECTORY_SEPARATOR . 'connect.php', ['links' => []])(...func_get_args());
     }
 
-    private static function prepare(\PDOStatement $statement, callable $error): callable
+    public static function prepare(\PDOStatement $statement, callable $error): callable
     {
         return static function(...$parameters) use ($statement, $error) : callable {
             try {

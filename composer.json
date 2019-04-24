@@ -17,6 +17,7 @@
       "pulledbits\\phuncql\\": "src"
     },
     "files": [
+      "src/functions.php",
       "src/Connect.php"
     ]
   },
