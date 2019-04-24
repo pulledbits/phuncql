@@ -12,7 +12,7 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
     private $pdo;
     private $connection;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->pdo = createMockPDOCallback();
         $linkIdentifier = uniqid('mysql', true);
@@ -21,7 +21,7 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
 
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         pdo::$links = [];
     }

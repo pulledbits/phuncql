@@ -26,7 +26,7 @@ class AsALibaryUser_IWantToConnectToASQLDatabase_SoThatICanInteractWithItTest ex
 
     final public function testConnect_WhenInvalidDSN_ExpectError() : void {
         connect('mysql:host=localhost;dbname=testdb', function(\Error $error) {
-            $this->assertContains('Unable to connect', $error->getMessage());
+            $this->assertStringContainsString('Unable to connect', $error->getMessage());
         });
     }
 
