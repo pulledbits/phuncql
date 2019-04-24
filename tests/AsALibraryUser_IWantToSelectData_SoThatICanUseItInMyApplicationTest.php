@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use function pulledbits\pdomock\createMockPDOCallback;
 use function pulledbits\pdomock\createMockPDOStatement;
 
-class pdoTest extends TestCase
+class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extends TestCase
 {
 
     public function testConnect()
