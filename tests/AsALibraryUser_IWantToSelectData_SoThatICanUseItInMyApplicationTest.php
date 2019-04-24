@@ -17,7 +17,7 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
         $this->pdo = createMockPDOCallback();
         $linkIdentifier = uniqid('mysql', true);
         pdo::$links[$linkIdentifier] = $this->pdo;
-        $this->connection = pdo::connect($linkIdentifier, function(\Error $error){});
+        $this->connection = connect($linkIdentifier, function(\Error $error){});
 
     }
 
@@ -37,7 +37,6 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
                     return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
             }
         });
-
 
         $statement = ($this->connection)('SELECT col1, col2 FROM table');
         $results = $statement();
