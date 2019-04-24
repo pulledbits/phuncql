@@ -14,7 +14,7 @@ class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extend
 
     static function setUpBeforeClass(): void
     {
-        self::$sqlite_file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest.sqlite';
+        self::$sqlite_file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . basename(__CLASS__) . '.sqlite';
         self::$sqlite = new \SQLite3(self::$sqlite_file);
         if (self::$sqlite->exec('CREATE TABLE IF NOT EXISTS persons (col1 TEXT PRIMARY KEY, col2 TEXT)') === false) {
             throw new \Exception('Can not create table persons: ' . self::$sqlite->lastErrorMsg());
