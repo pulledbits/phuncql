@@ -7,8 +7,8 @@ use PHPUnit\Framework\TestCase;
 class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extends TestCase
 {
 
-    static $sqlite_file;
-    static $sqlite;
+    private static $sqlite_file;
+    private static $sqlite;
     private $connection;
     private $col3Value;
 

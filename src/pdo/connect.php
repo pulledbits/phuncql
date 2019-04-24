@@ -12,7 +12,7 @@ return function (array $links) {
      * @var \PDO[] $links
      * @return callable
      */
-    return function (string $dsn, callable $error) use ($links) : callable {
+    return static function (string $dsn, callable $error) use ($links) : callable {
         if (array_key_exists($dsn, $links) === false) {
             try {
                 $links[$dsn] = new \PDO($dsn);
@@ -23,13 +23,13 @@ return function (array $links) {
             }
         }
         $connection = $links[$dsn];
-        return function (string $query) use ($connection, $error) : callable {
+        return static function (string $query) use ($connection, $error) : callable {
             try {
                 return call('pdo/prepare', $connection->prepare($query), $error);
             } catch (\PDOException $exception) {
                 $error(new \Error($exception->getMessage()));
             }
-            return function() : void {};
+            return static function() : void {};
         };
     };
 };
