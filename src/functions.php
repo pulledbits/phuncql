@@ -9,3 +9,7 @@ function import(string $path) : callable {
     }
     return $cache[$path](...array_slice(func_get_args(), 1));
 }
+
+function call(string $function) {
+    return import(__DIR__ . DIRECTORY_SEPARATOR . $function . '.php', ...array_slice(func_get_args(), 1));
+}

@@ -13,11 +13,11 @@ class pdo
 
     public static function connect(string $dsn, callable $error): callable
     {
-        return import(__DIR__ . DIRECTORY_SEPARATOR . 'pdo' . DIRECTORY_SEPARATOR . 'connect.php', self::$links)(...func_get_args());
+        return call('pdo/connect', self::$links)(...func_get_args());
     }
 
     public static function prepare(\PDOStatement $statement, callable $error): callable
     {
-        return import(__DIR__ . DIRECTORY_SEPARATOR . 'pdo' . DIRECTORY_SEPARATOR . 'prepare.php', $statement, $error);
+        return call('pdo/prepare', $statement, $error);
     }
 }
