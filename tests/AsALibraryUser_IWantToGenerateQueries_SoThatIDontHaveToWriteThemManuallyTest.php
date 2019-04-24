@@ -9,11 +9,10 @@ class AsALibraryUser_IWantToGenerateQueriesInTheConnectionDialect_SoThatIDontHav
 {
     final public function test_WhenQueryFunctionPassed_ExpectDialectedExtractedFromDSN() : void {
         $querier = connect('sqlite::memory:', function(\Error $error){});
-        $query = $querier(function(string $dialect) : string {
+        $querier(function(string $dialect) : string {
             $this->assertEquals('sqlite', $dialect);
             return 'CREATE TABLE persons (col1 TEXT)';
         });
-        $this->assertInstanceOf('Closure', $query());
     }
 
 
