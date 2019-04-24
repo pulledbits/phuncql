@@ -18,18 +18,6 @@ class pdo
 
     public static function prepare(\PDOStatement $statement, callable $error): callable
     {
-        return static function(...$parameters) use ($statement, $error) : callable {
-            try {
-                $statement->execute(...$parameters);
-            } catch (\PDOException $exception) {
-                return function(callable $callback) use ($exception, $error) : bool {
-                    $error(new \Error($exception->getMessage()));
-                    return false;
-                };
-            }
-            return static function(callable $callback) use ($statement) : bool {
-                return $statement->fetchAll(\PDO::FETCH_FUNC, $callback) !== false;
-            };
-        };
+        return import(__DIR__ . DIRECTORY_SEPARATOR . 'pdo' . DIRECTORY_SEPARATOR . 'prepare.php', $statement, $error);
     }
 }
