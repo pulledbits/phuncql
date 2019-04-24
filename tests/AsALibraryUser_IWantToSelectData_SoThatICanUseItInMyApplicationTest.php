@@ -3,115 +3,90 @@
 namespace pulledbits\phuncql;
 
 use PHPUnit\Framework\TestCase;
-use function pulledbits\pdomock\createMockPDOCallback;
-use function pulledbits\pdomock\createMockPDOStatement;
 
 class AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest extends TestCase
 {
 
-    private $pdo;
+    static $sqlite_file;
+    static $sqlite;
     private $connection;
+    private $col3Value;
 
-    protected function setUp() : void
+    static function setUpBeforeClass(): void
     {
-        $this->pdo = createMockPDOCallback();
-        $linkIdentifier = uniqid('mysql', true);
-        pdo::$links[$linkIdentifier] = $this->pdo;
-        $this->connection = connect($linkIdentifier, function(\Error $error){});
-
+        self::$sqlite_file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'AsALibraryUser_IWantToSelectData_SoThatICanUseItInMyApplicationTest.sqlite';
+        self::$sqlite = new \SQLite3(self::$sqlite_file);
+        if (self::$sqlite->exec('CREATE TABLE IF NOT EXISTS persons (col1 TEXT PRIMARY KEY, col2 TEXT)') === false) {
+            throw new \Exception('Can not create table persons: ' . self::$sqlite->lastErrorMsg());
+        }
     }
 
-    protected function tearDown() : void
+    final protected function setUp(): void
     {
-        pdo::$links = [];
+        $this->col3Value = uniqid("val", false);
+
+        if (self::$sqlite->exec('INSERT INTO persons (col1, col2) VALUES ("' . $this->col3Value . '", "lmno")') === false) {
+            throw new \Exception('Can not seed database: ' . self::$sqlite->lastErrorMsg());
+        }
+        $this->connection = call('pdo/connect', [])('sqlite:' . self::$sqlite_file, function (\Error $error) {
+        });
+
     }
 
     public function testConnect()
     {
-        $col3Identifier = uniqid("invoke", true);
-        $col3Value = uniqid("invoke", true);
-
-        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) : \PDOStatement {
-            switch ($query) {
-                case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']]);
-            }
-        });
-
-        $statement = ($this->connection)('SELECT col1, col2 FROM table');
+        $statement = ($this->connection)('SELECT col1, col2 FROM persons');
         $results = $statement();
-        $results(function(array $result) use ($col3Identifier, $col3Value) : void {
-            $this->assertEquals($col3Value, $result[$col3Identifier]);
-            $this->assertEquals('lmno', $result['col2']);
+        $results(function (string $col1, string $col2): void {
+            $this->assertEquals($this->col3Value, $col1);
+            $this->assertEquals('lmno', $col2);
         });
+    }
+
+
+    public function testConnect_When_InvalidQuery_Expect_FailedExecution() : void
+    {
+        $connection = call('pdo/connect', [])('sqlite:' . self::$sqlite_file, function (\Error $error) {
+            throw $error;
+        });
+        $this->expectExceptionMessageRegExp('/syntax error/');
+        $connection('SELECT col1 col2 persons');
     }
 
     public function testConnect_When_NamedPlaceholdersInQuery_Expect_RequiredParameters()
     {
-        $col3Identifier = uniqid("invoke", true);
-        $col3Value = uniqid("invoke", true);
+        $statement = ($this->connection)('SELECT col1, col2 FROM persons WHERE col1 = :col1Value');
 
-        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
-            switch ($query) {
-                case 'SELECT col1, col2 FROM table WHERE col1 = ' . $parameters[0]:
-                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']], $parameters, ['']);
-            }
-        });
-        $statement = ($this->connection)('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
-
-        $this->assertFalse($statement()(function(){}));
+        $this->assertFalse($statement()(function(string $col1, string $col2) { throw new \Exception('oops'); }));
     }
 
     public function testConnect_When_PlaceholdersInQuery_Expect_RequiredParameters()
     {
-        $col3Identifier = uniqid("invoke", true);
-        $col3Value = uniqid("invoke", true);
-
-        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
-            switch ($query) {
-                case 'SELECT col1, col2 FROM table WHERE col1 = ?':
-                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']], $parameters, ['']);
-            }
-        });
-
-        $statement = ($this->connection)('SELECT col1, col2 FROM table WHERE col1 = ?');
-        $this->assertFalse($statement()(function(){}));
+        $statement = ($this->connection)('SELECT col1, col2 FROM persons WHERE col1 = ?');
+        $this->assertFalse($statement()(function(string $col1, string $col2) { throw new \Exception('oops'); }));
     }
 
     public function testConnect_When_PlaceholdersInQueryAndParametersGiven_Expect_ResultSet()
     {
-        $col3Identifier = uniqid("invoke", true);
-        $col3Value = uniqid("invoke", true);
-
-        $this->pdo->callback(function(string $query, array $parameters) use ($col3Identifier, $col3Value) {
-            switch ($query) {
-                case 'SELECT col1, col2 FROM table WHERE col1 = ' . $parameters[0]:
-                    return createMockPDOStatement($query, [[$col3Identifier => $col3Value, 'col2' => 'lmno']], $parameters, ['abcde']);
-            }
-        });
-
-        $statement = ($this->connection)('SELECT col1, col2 FROM table WHERE col1 = :col1Value');
+        $statement = ($this->connection)('SELECT col1, col2 FROM persons WHERE col1 = :col1Value');
 
         $results = $statement([':col1Value' => 'abcde']);
 
-        $this->assertTrue($results(function(array $result) use ($col3Identifier, $col3Value) : void {
-            $this->assertEquals($col3Value, $result[$col3Identifier]);
-            $this->assertEquals('lmno', $result['col2']);
+        $this->assertTrue($results(function (string $col1, string $col2) : void {
+            $this->assertEquals($this->col3Value, $col1);
+            $this->assertEquals('lmno', $col2);
         }));
     }
 
-    public function testConnect_When_InvalidQuery_Expect_FailedExecution()
+    protected function tearDown(): void
     {
-        $this->pdo->callback(function(string $query, array $parameters) {
-            switch ($query) {
-                case 'SELECT col1, col2 FROM table':
-                    return createMockPDOStatement($query, false);
-            }
-        });
+        self::$sqlite->query('DELETE FROM persons');
+        self::$sqlite->query('VACUUM');
+    }
 
-        $statement = ($this->connection)('SELECT col1, col2 FROM table');
-        $results = $statement();
-
-        $this->assertFalse($results(function(){}));
+    static function tearDownAfterClass(): void
+    {
+        self::$sqlite->close();
+        unlink(self::$sqlite_file);
     }
 }

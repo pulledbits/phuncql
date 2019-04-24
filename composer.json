@@ -5,10 +5,12 @@
   "type": "library",
   "require": {
     "php": ">=7.3",
+    "ext-pdo" : "*",
     "nikic/iter": "^1.6",
     "lstrojny/functional-php": "^1.9"
   },
   "require-dev": {
+    "ext-sqlite3" : "*",
     "phpunit/phpunit": "~8.1",
     "pulledbits/pdo-mock": "^2.0"
   },
